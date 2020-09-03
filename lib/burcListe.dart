@@ -1,22 +1,44 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_apprehber/model/burc.dart';
 import 'package:flutter_apprehber/utils/strings.dart';
-
 class BurcListesi extends StatelessWidget {
-  List<Burc> tumBurclar;
+  static List<Burc> tumBurclar;
 
   @override
   Widget build(BuildContext context) {
-    tumBurclar = verikaynaginihazirla();
+    tumBurclar = veriKaynaginiHazirla();
+
     return Scaffold(
       appBar: AppBar(
         title: Text("Burç Rehberi"),
       ),
-      body: listeyihazirla(),
+      body: listeyiHazirla(),
     );
   }
 
-  Widget listeyihazirla() {
+  List<Burc> veriKaynaginiHazirla() {
+    List<Burc> burclar = [];
+
+    for (int i = 0; i < 12; i++) {
+      String kucukResim =
+          Strings.BURC_ADLARI[i].toLowerCase() + "${i + 1}.png"; //Koc->koc1.png
+      String buyukResim = Strings.BURC_ADLARI[i].toLowerCase() +
+          "_buyuk" +
+          "${i + 1}.png"; //Koc->koc_buyuk1.png
+
+      Burc eklenecekBurc = Burc(
+          Strings.BURC_ADLARI[i],
+          Strings.BURC_TARIHLERI[i],
+          Strings.BURC_GENEL_OZELLIKLERI[i],
+          kucukResim,
+          buyukResim);
+      burclar.add(eklenecekBurc);
+    }
+
+    return burclar;
+  }
+
+  Widget listeyiHazirla() {
     return ListView.builder(
       itemBuilder: (BuildContext context, int index) {
         return tekSatirBurc(context, index);
@@ -25,43 +47,40 @@ class BurcListesi extends StatelessWidget {
     );
   }
 
-  List<Burc> verikaynaginihazirla() {
-    List<Burc> burclar = [];
-    for (int i = 0; i < 12; i++) {
-      String kucukresim = Strings.BURC_ADLARI[i].toLowerCase() + "${i + 1}.png";
-      String buyukresim =
-          Strings.BURC_ADLARI[i].toLowerCase() + "_buyuk${i + 1}.png";
-      Burc eklenecekBurc = Burc(
-          Strings.BURC_ADLARI[i],
-          Strings.BURC_TARIHLERI[i],
-          Strings.BURC_GENEL_OZELLIKLERI[i],
-          kucukresim,
-          buyukresim);
-      burclar.add(eklenecekBurc);
-    }
-    return burclar;
-  }
-
   Widget tekSatirBurc(BuildContext context, int index) {
-    Burc onakiEklenenBurc = tumBurclar[index];
+    Burc oanListeyeEklenenBurc = tumBurclar[index];
 
     return Card(
       elevation: 4,
-      child: ListTile(
-        leading: Image.asset("images/" + onakiEklenenBurc.burcKucukResim,
-            width: 64, height: 64),
-        title: Text(onakiEklenenBurc.burcAdi,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ListTile(
+          onTap: () => Navigator.pushNamed(context, "/burcDetay/$index"),
+          //onTap: ()=>Navigator.push(context, MaterialPageRoute(builder: (context)=>BurcDetay())),
+          leading: Image.asset(
+            "images/" + oanListeyeEklenenBurc.burcKucukResim,
+            width: 64,
+            height: 64,
+          ),
+          title: Text(
+            oanListeyeEklenenBurc.burcAdi,
             style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.w400,
-                color: Colors.blue.shade500)),
-        subtitle:Text(onakiEklenenBurc.burcTarihi,
-            style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w400,
-                color: Colors.black38)
-        ) ,
-        trailing:Icon(Icons.arrow_forward_ios,color: Colors.black38,),
+                color: Colors.pink.shade500),
+          ),
+          subtitle: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Text(
+              oanListeyeEklenenBurc.burcTarihi,
+              style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.black38),
+            ),
+          ),
+          trailing: Icon(Icons.arrow_forward_ios, color: Colors.pink),
+        ),
       ),
     );
   }
